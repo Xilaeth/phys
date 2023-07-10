@@ -5,6 +5,7 @@ import matplotlib.animation as ani
 
 # the matrix has to be strictly diagonally dominant, meaning a1 + a3 < a2 OR positive definite and symmetric
 def gauss_seidel_tri(b, a1, a2, a3, limit):
+    # adding next: b1, b2, b3 for the B-matrix
     size = b.shape[0]
     x = np.zeros(size, complex)
     for i in range(limit):

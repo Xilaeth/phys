@@ -3,33 +3,12 @@ from numpy import linalg
 import matplotlib.pyplot as plt
 import matplotlib.animation as ani
 
-def gauss_seidel(A, b, limit):
+# the matrix has to be strictly diagonally dominant, meaning a1 + a3 < a2 OR positive definite and symmetric
+def gauss_seidel_tri(b, a1, a2, a3, limit):
     size = b.shape[0]
-    x = np.ones(size, float)
+    x = np.zeros(size, complex)
     for i in range(limit):
-        xn = np.ones(size, float)
-        for j in range(size):
-            a1 = 0
-            a2 = 0
-            for k in range(j):
-                a1 += A[j, k] * xn[k]
-            for k in range(j+1, size):
-                a2 += A[j, k] * x[k]
-            xn[j] = (b[j] - a1 - a2) / A[j, j]
-        if linalg.norm(x - xn) < 1e-10:
-            print(i, "|", linalg.norm(x - xn))
-            break            
-        if i == limit-1:
-            print("reached limit")
-            exit()
-        x = xn
-    return x
-
-def gauss_seidel_tri(A, b, a1, a2, a3, limit):
-    size = b.shape[0]
-    x = np.zeros(size, float)
-    for i in range(limit):
-        xn = np.ones(size, float)
+        xn = np.ones(size, complex)
         for j in range(size):
             a = 0
             if j == 0:
@@ -39,7 +18,8 @@ def gauss_seidel_tri(A, b, a1, a2, a3, limit):
             else:
                 a += a1*x[j-1] + a3*x[j+1]
             xn[j] = (b[j] - a) / a2
-        if linalg.norm(x - xn) < 1e-10:
+        print(xn)
+        if linalg.norm(x - xn) < 1e-15:
             print(i, "|", linalg.norm(x - xn))
             break
         if i == limit-1:
@@ -48,9 +28,40 @@ def gauss_seidel_tri(A, b, a1, a2, a3, limit):
         x = xn
     return x
 
+# limit = int(input("Itteration limit: "))
+# xn = int(input("X-steps: "))
+# t = float(input("Time: "))
+# tn = int(input("T-steps: "))
+# k = float(input("Wave number: "))
+
+limit = 100000
 tn = 100
-xn = 100
+xn = 10
 x = 1
 t = 10
-dt = int(t / tn)
-dx = int(x / xn)
+dt = t / tn
+dx = x / xn
+k = 0.1
+
+# test input
+# -------
+# M = np.array([[-1, 0.5, 0],
+              # [0.5, -1, 0.5],
+              # [0, 0.5, -1]], complex)
+
+b = np.array(list(map(lambda y: np.e ** (-(((y*dx)-0.5)**2)/(0.1)) * np.e ** (1j * (y*dx) * k), range(0, xn))))
+t = np.linspace(0, x, xn)
+print(np.absolute(b))
+#M2 = linalg.inv(M)
+# -------
+
+v = gauss_seidel_tri(b, 0.4, 1, 0.4, limit)
+# print(v)
+v2 = gauss_seidel_tri(v, 0.4, 1, 0.4, limit)
+# print(v2)
+
+
+plt.plot(t, np.absolute(b), "r")
+plt.plot(t, np.absolute(v), "b")
+plt.plot(t, np.absolute(v2), "g")
+plt.show()

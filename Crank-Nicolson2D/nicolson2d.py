@@ -68,6 +68,6 @@ def animation(data):
     return mat,
 
 ani = anim.FuncAnimation(fig, animation, frames=(tn//skip), interval=interval, blit=True)
-ani.save("quantum2d.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
+ani.save("quantum2d.mp4", fps=30)
 
 # plt.show()

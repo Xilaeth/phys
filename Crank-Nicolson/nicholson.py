@@ -15,7 +15,7 @@ def gauss_seidel_tri(b, a1, a2, a3, b1, b2, b3, pot, limit):
             a = 0
             a += a1*xn[j-1] + a3*x[j+1]
             xn[j] = ((b1*b[j-1] + (b2 + (dt/2)*pot(dx*j))*b[j] + b3*b[j+1]) - a) / (a2 - (dt/2)*pot(dx*j))
-        if linalg.norm(x - xn) < 1e-8:
+        if linalg.norm(x - xn) < 1e-15:
             print(i, "|", linalg.norm(x - xn))
             break
         if i == limit-1:
@@ -64,7 +64,7 @@ print(a)
 
 def V(x):
     if x > 0.7 and x < 0.72:
-        return -50000.0
+        return -70000.0
     else:
         return 0.0
 
@@ -76,6 +76,7 @@ for i in range(tn):
     if i % skip == 0:
         vs.append(v)
     v = gauss_seidel_tri(v, a1, a2, a3, b1, b2, b3, V, limit)
+    print(sum(np.absolute(v)**2))
 
 def animation(data):
     line.set_xdata(x_range)

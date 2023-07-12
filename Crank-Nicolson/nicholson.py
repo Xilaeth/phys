@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 import matplotlib.patches as mpatches
 
-
 # the matrix has to be strictly diagonally dominant, meaning a1 + a3 < a2 OR positive definite and symmetric
 def gauss_seidel_tri(b, a1, a2, a3, b1, b2, b3, pot, limit):
     size = b.shape[0]
@@ -64,7 +63,7 @@ print(a)
 
 def V(x):
     if x > 0.7 and x < 0.72:
-        return -70000.0
+        return a*70000.0
     else:
         return 0.0
 
@@ -80,7 +79,7 @@ for i in range(tn):
 
 def animation(data):
     line.set_xdata(x_range)
-    line.set_ydata(np.absolute(vs[data]))
+    line.set_ydata(np.absolute(vs[data])**2)
     return line,
 
 wall = mpatches.Rectangle((0.7, 0.0), 0.03, 1.2, fill= False, color = "black", linewidth=0.5)

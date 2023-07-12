@@ -86,6 +86,6 @@ wall = mpatches.Rectangle((0.7, 0.0), 0.03, 1.2, fill= False, color = "black", l
 fig.gca().add_patch(wall)
 
 ani = anim.FuncAnimation(fig, animation, frames=(tn//skip), interval=interval, blit=True)
-# ani.save("quantum_tunneling.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
+ani.save("quantum_tunneling.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
 
-plt.show()
+# plt.show()

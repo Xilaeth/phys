@@ -58,9 +58,8 @@ def inhom(v, l):
             vec[i, j] = (l/2) * (v[i-1, j] + v[i+1, j] + v[i, j-1] + v[i, j+1]) + (1 - 2*l) * v[i, j]
     return vec
     
-
 limit = 1000
-tn = 25000
+tn = 10000
 xn = 200
 yn = 200
 x = 1

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
+import matplotlib.patches as mpatches
 
 file = open("data.txt", "r")
 dat = file.read()
@@ -9,6 +10,7 @@ file.close()
 
 text_buf = ""
 sep = []
+sep0 = []
 sepsep = []
 for c in dat:
     if c == '>':
@@ -43,6 +45,10 @@ def animation(data):
     line.set_ydata(sepsep[data])
     return line,
 
-ani = anim.FuncAnimation(fig, animation, frames=tim, interval=interval, blit=True)
+wall = mpatches.Rectangle((0.7, 0.0), 0.03, 1.2, fill= False, color = "black", linewidth=0.5)
+fig.gca().add_patch(wall)
 
-plt.show()
+ani = anim.FuncAnimation(fig, animation, frames=tim, interval=interval, blit=True)
+ani.save("quantum_tunneling_cxx.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
+
+# plt.show()

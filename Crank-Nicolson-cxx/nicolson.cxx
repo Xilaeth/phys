@@ -91,7 +91,7 @@ int main() {
     }
 
     ofstream dat;
-    dat.open("data.txt");
+    dat.open("nicolson.txt");
     int count = 0;
     for (EVEC v2 : vs) {
         if (count % 5 == 0) {

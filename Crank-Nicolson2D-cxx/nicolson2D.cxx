@@ -6,110 +6,102 @@
 #include <fstream>
 #include <eigen3/Eigen/Dense>
 
-#define EMAT Eigen::Matrix<complex<long double>, Eigen::Dynamic, Eigen::Dynamic>
-#define EVEC Eigen::Vector<complex<long double>, Eigen::Dynamic>
-#define CLD complex<long double>
+#define EMAT Eigen::Matrix<complex<double>, Eigen::Dynamic, Eigen::Dynamic>
+#define EVEC Eigen::Vector<complex<double>, Eigen::Dynamic>
+#define CLD complex<double>
 
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 100;
-const int x_steps = 50;
+const int time_steps = 1600;
+const int x_steps = 200;
 const CLD x_len = 1.0;
-const CLD t_len = 0.004;
-const CLD m = 1;
-const CLD hbar = 1;
-const CLD kx = 500;
+const CLD t_len = 0.0016;
+const CLD kx = 0;
 const CLD ky = 500;
 const CLD dt = t_len / (CLD)time_steps;
 const CLD dx = x_len / (CLD)x_steps;
 
-const CLD sigma = 0.001;
+const CLD sigma = 0.0025;
 const CLD mean_x = 0.5;
-const CLD mean_y = 0.5;
+const CLD mean_y = 0.3;
 
-const CLD lambda = (CLD)1i * (dt*hbar) / ((CLD)2*m*dx*dx);
-const CLD lamb02 = (CLD)1i * (dt*hbar) / ((CLD)4*m*dx*dx);
-const CLD pot_fac = (CLD)(1i)/hbar;
+const CLD l = (CLD)1i * dt / ((CLD)4*dx*dx);
+const CLD pot_fac = (CLD)(1i);
 
-const CLD wall_width = 0.03;
-const CLD wall_start = 0.7;
+const double wall_y = 0.7;
+const double wall_x1 = 0.35;
+const double wall_x2 = 0.45;
+const double wall_x3 = 0.55;
+const double wall_x4 = 0.65;
+const double wall_width = 0.03;
 
 CLD potential(CLD x, CLD y) {
-    return 0;
+    if (real(y) > wall_y && real(y) < (wall_y + wall_width)) {
+        return pot_fac*(dt/(CLD)2.0)*(CLD)70000.0;
+    } else {
+        return pot_fac*(dt/(CLD)2.0)*(CLD)0.0;
+    }
 }
 
-EMAT gauss_seidel_tri(EMAT v, CLD l, int limit) {
-    EMAT vec;
-    EMAT a;
+void gauss_seidel_tri(EMAT &vec) {
+    CLD a;
     EMAT b;
     EMAT new_vec;
     vec.resize(x_steps, x_steps);
     new_vec.resize(x_steps, x_steps);
-    a.resize(x_steps, x_steps);
     b.resize(x_steps, x_steps);
-    vec.setZero();
-    a.setZero();
     b.setZero();
+
+    for (int ix = 1; ix < x_steps-1; ix++) {
+        for (int iy = 1; iy < x_steps-1; iy++) {
+            b(ix, iy) = (vec(ix-1, iy) + vec(ix+1, iy) + vec(ix, iy-1) + vec(ix, iy+1)) * l + vec(ix, iy) * (((CLD)1 - (CLD)4.0*l + potential((CLD)ix*dx, (CLD)iy*dx)));
+       }
+    }
+
     for (int rep = 1; rep <= limit; rep++) {
         new_vec.setZero();
-        for (int nth = 1; nth < x_steps-1; nth++) {
-            for (int nth2 = 1; nth2 < x_steps-1; nth2++) {
-                if (rep == 1) {
-                    b(nth, nth2) = (v(nth-1, nth2) + v(nth+1, nth2) + v(nth, nth2-1) + v(nth, nth2+1)) * lamb02 + (v(nth, nth2) * (((CLD)1 - (CLD)2*l) + (dt/(CLD)2)*potential((CLD)nth*dx, (CLD)nth2*dx)));
-                }
-                a(nth, nth2) = lamb02 * (new_vec(nth-1, nth2) + vec(nth+1, nth2) + new_vec(nth, nth2-1) + vec(nth, nth2+1));
-                new_vec(nth, nth2) = (b(nth, nth2) - a(nth, nth2)) / ( (CLD)1 + (CLD)2*l - (dt/(CLD)2)*potential((CLD)nth*dx, (CLD)nth2*dx) );
+        for (int ix = 1; ix < x_steps-1; ix++) {
+            for (int iy = 1; iy < x_steps-1; iy++) {
+                a = -l * (new_vec(ix-1, iy) + vec(ix+1, iy) + new_vec(ix, iy-1) + vec(ix, iy+1));
+                new_vec(ix, iy) = (b(ix, iy) - a) / ( (CLD)1 + (CLD)4*l - potential((CLD)ix*dx, (CLD)iy*dx));
             }
         }
+
         if ((new_vec - vec).norm() < 1e-10) {
             cout << rep << " | Error: " << (new_vec - vec).norm() << endl;
             break;
         }
+
         if (rep == limit) {
             cout << "limit reached" << endl;
             exit(0);
         }
         vec = new_vec;
     }
-    return vec;
 }
 
 int main() {
+
     EMAT vec;
+
     vec.resize(x_steps, x_steps);
-    for (int i = 0; i < x_steps; i++) {
-        for (int j = 0; j < x_steps; j++) {
-            vec(i, j) = (exp((-(pow(((CLD)i*dx - mean_x), 2) + pow((CLD)j*dx, 2))/sigma) + ((CLD)1i * (kx * (CLD)i*dx + ky * (CLD)j*dx))));
+    vec.setZero();
+
+    for (int i = 1; i < x_steps-1; i++) {
+        for (int j = 1; j < x_steps-1; j++) {
+            vec(i, j) = (exp((-(pow(((CLD)i*dx - mean_x), 2) + pow((CLD)j*dx - mean_y, 2))/sigma) + ((CLD)1i * (kx * (CLD)i*dx + ky * (CLD)j*dx))));
         }
     }
 
-    //cout << vec << endl;
-    //cout << vec.norm() << endl;
-
-    //EMAT v = gauss_seidel_tri(vec, lambda, limit);
-    //cout << v << endl;
-
-    vector<EMAT> vs;
-    for (int tim = 0; tim < time_steps; tim++) {
-        vs.push_back(vec);
-        cout << "Step: " << tim << " | ";
-        EMAT v = gauss_seidel_tri(vec, lambda, limit);
-        cout << tim << endl;
-        vec = v;
-    }
-
-    //EMAT v_temp = vs[0].array().abs().square();
-
-    //cout << v_temp << endl;
-
     ofstream dat;
-    dat.open("data.txt");
-    int count = 0;
-    for (EMAT v2 : vs) {
-        if (count % 5 == 0) {
-            EMAT v_temp = v2.array().abs().square();
-            cout << v_temp << endl;
+    dat.open("nicolson2d.txt");
+    EMAT v0;
+    v0 = vec;
+
+    for (int tim = 0; tim < time_steps; tim++) {
+        if (tim % 10 == 0) {
+            EMAT v_temp = vec.array().abs().square();
             for (int i = 0; i < x_steps; i++) {
                 for (int j = 0; j < x_steps; j++) {
                     dat << real(v_temp(i, j)) << "|";
@@ -118,9 +110,15 @@ int main() {
             }
             dat << endl;
         }
-        count++;
+        cout << "Step: " << tim << " | ";
+        gauss_seidel_tri(vec);
+        cout << tim << " | " << (vec.array().abs().square()).sum() << endl;
     }
+
+    cout << vec - v0 << endl;
+
     dat << ">";
     dat.close();
+
     return 0;
 }

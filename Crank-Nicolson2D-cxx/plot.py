@@ -3,20 +3,23 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 import matplotlib.patches as mpatches
 
-file = open("data.txt", "r")
+file = open("nicolson2d.txt", "r")
 dat = file.read()
 # print(dat)
 file.close()
 
 text_buf = ""
 sep = []
-sep0 = []
+sep2 = []
 sepsep = []
 for c in dat:
     if c == '>':
         break
     elif c == '\n':
-        sepsep.append(np.array(sep))
+        sepsep.append(np.array(sep2))
+        sep2 = []
+    elif c == ";":
+        sep2.append(np.array(sep))
         sep = []
     elif c == '|':
         sep.append(float(text_buf))
@@ -24,31 +27,36 @@ for c in dat:
     else:
         text_buf += c
 
+sepsep = np.array(sepsep)
 size = len(sepsep[0])
 tim = len(sepsep)
-interval = 20
+interval = 2
+
+print(np.shape(sepsep[0]))
 
 x = np.array(sep)
 t = np.linspace(0.0, 1.0, size)
 
-fig, ax = plt.subplots()
-line, = ax.plot([], [], "k")
-xdata, ydata = [], []
-ax.set_xlim([0, 1])
-ax.set_ylim([0, 1.2])
+fig = plt.figure()
+ax = plt.axes(projection='3d')
+X = range(size)
+Y = range(size)
+X, Y = np.meshgrid(X, Y)
+plot = ax.plot_surface(X, Y, sepsep[0], cmap=plt.cm.bwr, rstride=1, cstride=1, linewidth=0.01, color="k")
+ax.grid(False)
 
 print(sepsep[0])
 print(size)
+print(tim)
 
-def animation(data):
-    line.set_xdata(t)
-    line.set_ydata(sepsep[data])
-    return line,
+def animation(data, other, plot):
+    ax.clear()
+    plot = ax.plot_surface(X, Y, sepsep[data], cmap=plt.cm.bwr, rstride=1, cstride=1, linewidth=0.01, color="k")
+    ax.grid(False)
+    ax.set_axis_off()
+    return plot,
 
-wall = mpatches.Rectangle((0.7, 0.0), 0.03, 1.2, fill= False, color = "black", linewidth=0.5)
-fig.gca().add_patch(wall)
+ani = anim.FuncAnimation(fig, animation, frames=tim, fargs=(sepsep, plot), interval=interval, blit=False)
+# ani.save("2d-cxx.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
 
-ani = anim.FuncAnimation(fig, animation, frames=tim, interval=interval, blit=True)
-ani.save("quantum_tunneling_cxx.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
-
-# plt.show()
+plt.show()

@@ -1,4 +1,3 @@
-#include <numeric>
 #include <complex>
 #include <iostream>
 #include <vector>
@@ -27,7 +26,8 @@ const CLD dx = x_len / (CLD)x_steps;
 const CLD sigma = 0.001;
 const CLD mean_x = 0.5;
 
-const CLD lambda = (CLD)1i * (dt*hbar) / ((CLD)2*m*pow(dx, 2));
+const CLD lambda = (CLD)1i * (dt*hbar) / ((CLD)2*m*dx*dx);
+const CLD lamb02 = (CLD)1i * (dt*hbar) / ((CLD)4*m*dx*dx);
 const CLD pot_fac = (CLD)(1i)/hbar;
 
 EVEC gauss_seidel_tri(EVEC v, CLD l, int limit) {
@@ -46,12 +46,12 @@ EVEC gauss_seidel_tri(EVEC v, CLD l, int limit) {
         new_vec.setZero();
         for (int nth = 1; nth < x_steps-1; nth++) {
             if (rep == 1) {
-                b(nth) = (v(nth-1) + v(nth+1)) * (l/(CLD)2.0) + (v(nth) * ((CLD)1 - (CLD)2*l));
+                b(nth) = (v(nth-1) + v(nth+1)) * lamb02 + (v(nth) * ((CLD)1 - (CLD)2*l));
             }
-            a(nth) = (l/(CLD)2) * (new_vec(nth-1) + vec(nth+1));
+            a(nth) = lamb02 * (new_vec(nth-1) + vec(nth+1));
+            new_vec(nth) = (a(nth) - b(nth)) / ( (CLD)1 + (CLD)2*l );
         }
-        new_vec = (a - b) / ( (CLD)1 + (CLD)2*l );
-        if ((new_vec - vec).norm() < pow(10, -10)) {
+        if ((new_vec - vec).norm() < 1e-10) {
             cout << rep << " | Error: " << (new_vec - vec).norm() << endl;
             break;
         }
@@ -78,13 +78,21 @@ int main() {
         vec = v;
     }
 
+    cout << "lambda: " << lambda << endl;
+
+    cout << "dt: " << dt << endl;
+
+    cout << "dx: " << dx << endl;
+
+    cout << "1 + 2l: " << ((CLD)1 + (CLD)2*lambda) << endl;
+
     cout << vs[time_steps-1] << endl;
 
     ofstream dat;
     dat.open("data.txt");
     for (EVEC v2 : vs) {
         for (int i = 0; i < x_steps; i++) {
-            dat << pow(abs(v2(i)), 2) << "|";
+            dat << abs(v2(i))*abs(v2(i)) << "|";
         }
         dat << endl;
     }

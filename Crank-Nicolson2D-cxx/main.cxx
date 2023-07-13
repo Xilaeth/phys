@@ -5,76 +5,54 @@
 #include <cstdlib>
 #include <cmath>
 #include <fstream>
+#include <eigen3/Eigen/Dense>
+
+#define EMAT Eigen::Matrix<complex<long double>, Eigen::Dynamic, Eigen::Dynamic>
+#define EVEC Eigen::Vector<complex<long double>, Eigen::Dynamic>
+#define CLD complex<long double>
 
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 10000;
+const int time_steps = 1000;
 const int x_steps = 400;
-const complex<long double> x_len = 1.0;
-const complex<long double> t_len = 0.004;
-const complex<long double> m = 1;
-const complex<long double> hbar = 1;
-const complex<long double> k = 500;
-const complex<long double> dt = t_len / (complex<long double>)time_steps;
-const complex<long double> dx = x_len / (complex<long double>)x_steps;
+const CLD x_len = 1.0;
+const CLD t_len = 0.004;
+const CLD m = 1;
+const CLD hbar = 1;
+const CLD k = 500;
+const CLD dt = t_len / (CLD)time_steps;
+const CLD dx = x_len / (CLD)x_steps;
 
-const complex<long double> sigma = 0.001;
-const complex<long double> mean_x = 0.5;
+const CLD sigma = 0.001;
+const CLD mean_x = 0.5;
 
-const complex<long double> lambda = (complex<long double>)1i * (dt*hbar) / ((complex<long double>)2*m*pow(dx, 2));
-const complex<long double> pot_fac = (complex<long double>)(1i)/hbar;
+const CLD lambda = (CLD)1i * (dt*hbar) / ((CLD)2*m*pow(dx, 2));
+const CLD pot_fac = (CLD)(1i)/hbar;
 
-int mat_to_ind(int i, int j) {
-    return (int)(i * x_steps + j);
-}
-
-vector<complex<long double>> add_v(vector<complex<long double>> v1, vector<complex<long double>> v2) {
-    vector<complex<long double>> v_out(0, v1.size());
-    for (int i = 0; i < v1.size(); i++) {
-        v_out.push_back(v1[i] + v2[i]);
-    }
-    return v_out;
-}
-
-vector<complex<long double>> sub_v(vector<complex<long double>> v1, vector<complex<long double>> v2) {
-    vector<complex<long double>> v_out(0, v1.size());
-    for (int i = 0; i < v1.size(); i++) {
-        v_out.push_back(v1[i] - v2[i]);
-    }
-    return v_out;
-}
-
-vector<complex<long double>> div_v_s(vector<complex<long double>> v, complex<long double> scal) {
-    vector<complex<long double>> v_out(0, v.size());
-    for (int i = 0; i < v.size(); i++) {
-        v_out.push_back(v[i] / scal);
-    }
-    return v_out;
-}
-
-long double norm_v(vector<complex<long double>> v1) {
-    long double out = 0;
-    for (int i = 0; i < v1.size(); i++) {
-        out += pow(abs(v1[i]),2);
-    }
-    return sqrt(out);
-}
-
-vector<complex<long double>> gauss_seidel_tri(vector<complex<long double>> v, complex<long double> l, int limit) {
-    vector<complex<long double>> vec(x_steps, 0);
-    vector<complex<long double>> b(x_steps, 0);
+EVEC gauss_seidel_tri(EVEC v, CLD l, int limit) {
+    EVEC vec;
+    EVEC a;
+    EVEC b;
+    EVEC new_vec;
+    vec.resize(x_steps);
+    new_vec.resize(x_steps);
+    a.resize(x_steps);
+    b.resize(x_steps);
+    vec.setZero();
+    a.setZero();
+    b.setZero();
     for (int rep = 1; rep <= limit; rep++) {
-        vector<complex<long double>> new_vec(x_steps, 0);
+        new_vec.setZero();
         for (int nth = 1; nth < x_steps-1; nth++) {
             if (rep == 1) {
-                b[nth] = (v[nth-1] + v[nth+1]) * (l/(complex<long double>)2.0) + (v[nth] * ((complex<long double>)1 - (complex<long double>)2*l));
+                b(nth) = (v(nth-1) + v(nth+1)) * (l/(CLD)2.0) + (v(nth) * ((CLD)1 - (CLD)2*l));
             }
-            complex<long double> a = (l/(complex<long double>)2) * (new_vec[nth-1] + vec[nth+1]);
-            new_vec[nth] = (b[nth] - a) / ((complex<long double>)1 + (complex<long double>)2*l);
+            a(nth) = (l/(CLD)2) * (new_vec(nth-1) + vec(nth+1));
         }
-        if (norm_v(sub_v(new_vec, vec)) < pow(10, -5)) {
-            //cout << rep << " | Error: " << norm_v(sub_v(new_vec, vec)) << endl;
+        new_vec = (a - b) / ( (CLD)1 + (CLD)2*l );
+        if ((new_vec - vec).norm() < pow(10, -10)) {
+            cout << rep << " | Error: " << (new_vec - vec).norm() << endl;
             break;
         }
         if (rep == limit) {
@@ -87,22 +65,26 @@ vector<complex<long double>> gauss_seidel_tri(vector<complex<long double>> v, co
 }
 
 int main() {
-    vector<complex<long double>> vec;
+    EVEC vec;
+    vec.resize(x_steps);
     for (int i = 0; i < x_steps; i++) {
-        vec.push_back(exp((-pow(((complex<long double>)i*dx - mean_x), 2)/sigma) + ((complex<long double>)1i * k * (complex<long double>)i*dx)));
+        vec(i) = (exp((-pow(((CLD)i*dx - mean_x), 2)/sigma) + ((CLD)1i * k * (CLD)i*dx)));
     }
-    vector<vector<complex<long double>>> vs;
+
+    vector<EVEC> vs;
     for (int tim = 0; tim < time_steps; tim++) {
         vs.push_back(vec);
-        vector<complex<long double>> v = gauss_seidel_tri(vec, lambda, limit);
+        EVEC v = gauss_seidel_tri(vec, lambda, limit);
         vec = v;
     }
 
+    cout << vs[time_steps-1] << endl;
+
     ofstream dat;
     dat.open("data.txt");
-    for (auto v2 : vs) {
+    for (EVEC v2 : vs) {
         for (int i = 0; i < x_steps; i++) {
-            dat << pow(abs(v2[i]), 2) << "|";
+            dat << pow(abs(v2(i)), 2) << "|";
         }
         dat << endl;
     }

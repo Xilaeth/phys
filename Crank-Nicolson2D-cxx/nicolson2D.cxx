@@ -13,7 +13,7 @@
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 1600;
+const int time_steps = 1000;
 const int x_steps = 200;
 const CLD x_len = 1.0;
 const CLD t_len = 0.0016;
@@ -46,16 +46,20 @@ CLD potential(CLD x, CLD y) {
 
 void gauss_seidel_tri(EMAT &vec) {
     CLD a;
+    EMAT pot;
     EMAT b;
     EMAT new_vec;
+    pot.resize(x_steps, x_steps);
     vec.resize(x_steps, x_steps);
     new_vec.resize(x_steps, x_steps);
     b.resize(x_steps, x_steps);
+    pot.setZero();
     b.setZero();
 
     for (int ix = 1; ix < x_steps-1; ix++) {
         for (int iy = 1; iy < x_steps-1; iy++) {
-            b(ix, iy) = (vec(ix-1, iy) + vec(ix+1, iy) + vec(ix, iy-1) + vec(ix, iy+1)) * l + vec(ix, iy) * (((CLD)1 - (CLD)4.0*l + potential((CLD)ix*dx, (CLD)iy*dx)));
+            pot(ix, iy) = potential((CLD)ix*dx, (CLD)iy*dx);
+            b(ix, iy) = (vec(ix-1, iy) + vec(ix+1, iy) + vec(ix, iy-1) + vec(ix, iy+1)) * l + vec(ix, iy) * ((CLD)1 - (CLD)4.0*l + pot(ix, iy));
        }
     }
 
@@ -64,7 +68,7 @@ void gauss_seidel_tri(EMAT &vec) {
         for (int ix = 1; ix < x_steps-1; ix++) {
             for (int iy = 1; iy < x_steps-1; iy++) {
                 a = -l * (new_vec(ix-1, iy) + vec(ix+1, iy) + new_vec(ix, iy-1) + vec(ix, iy+1));
-                new_vec(ix, iy) = (b(ix, iy) - a) / ( (CLD)1 + (CLD)4*l - potential((CLD)ix*dx, (CLD)iy*dx));
+               new_vec(ix, iy) = (b(ix, iy) - a) / ( (CLD)1 + (CLD)4*l - pot(ix, iy));
             }
         }
 

@@ -32,6 +32,7 @@ sepsep = np.array(sepsep)
 size = len(sepsep[0])
 tim = len(sepsep)
 interval = 20
+size = size
 
 canvas = scene.SceneCanvas(keys='interactive', size=(size, size), show=True)
 view = canvas.central_widget.add_view()

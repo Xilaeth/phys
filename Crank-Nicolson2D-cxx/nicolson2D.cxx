@@ -14,7 +14,7 @@ using namespace std;
 
 const int limit = 1000; 
 const int time_steps = 1000;
-const int x_steps = 600;
+const int x_steps = 400;
 const CLD x_len = 1.0;
 const CLD t_len = 0.004;
 const CLD kx = 0;
@@ -24,27 +24,34 @@ const CLD dx = x_len / (CLD)x_steps;
 
 const CLD sigma = 0.0025;
 const CLD mean_x = 0.5;
-const CLD mean_y = 0.3;
+const CLD mean_y = 0.2;
 
 const CLD l = (CLD)1i * dt / ((CLD)4*dx*dx);
 const CLD pot_fac = (CLD)(1i)*(dt/(CLD)2.0);
 
 const double wall_y = 0.7;
-const double wall_x1 = 0.35;
-const double wall_x2 = 0.45;
-const double wall_x3 = 0.55;
-const double wall_x4 = 0.65;
+const double wall_x1 = 0.40;
+const double wall_x2 = 0.50;
+const double wall_x3 = 0.60;
+const double wall_x4 = 0.70;
 const double wall_width = 0.03;
 
 CLD potential(CLD x, CLD y) {
     if (real(y) > wall_y && real(y) < (wall_y + wall_width)) {
         if (real(x) < wall_x1 || real(x) > wall_x4 || (real(x) > wall_x2 && real(x) < wall_x3)) {
-            return pot_fac*(CLD)140000.0; 
+            return pot_fac*(CLD)200000.0; 
         }
         return pot_fac*(CLD)0.0;
     } 
     return pot_fac*(CLD)0.0;
 }
+
+//CLD potential(CLD x, CLD y) {
+    //if (not(x == 0.5) && not(y == 0.5)) {
+        //return pot_fac * (CLD)( (CLD)1 / sqrt((pow((CLD)0.5 - x, 2) + pow((CLD)0.5 - y, 2))));
+    //}
+    //return pot_fac * (CLD)100000.0;
+//}
 
 void gauss_seidel_tri(EMAT &vec) {
     CLD a;

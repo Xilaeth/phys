@@ -8,6 +8,7 @@ dat = file.read()
 # print(dat)
 file.close()
 
+count = 0
 text_buf = ""
 sep = []
 sep2 = []
@@ -18,6 +19,8 @@ for c in dat:
     elif c == '\n':
         sepsep.append(np.array(sep2))
         sep2 = []
+        print(count)
+        count += 1
     elif c == ";":
         sep2.append(np.array(sep))
         sep = []
@@ -30,9 +33,7 @@ for c in dat:
 sepsep = np.array(sepsep)
 size = len(sepsep[0])
 tim = len(sepsep)
-interval = 2
-
-print(np.shape(sepsep[0]))
+interval = 20
 
 x = np.array(sep)
 t = np.linspace(0.0, 1.0, size)
@@ -50,6 +51,7 @@ print(size)
 print(tim)
 
 def animation(data, other, plot):
+    print(data)
     ax.clear()
     plot = ax.plot_surface(X, Y, sepsep[data], cmap=plt.cm.bwr, rstride=1, cstride=1, linewidth=0.01, color="k")
     ax.grid(False)
@@ -57,6 +59,6 @@ def animation(data, other, plot):
     return plot,
 
 ani = anim.FuncAnimation(fig, animation, frames=tim, fargs=(sepsep, plot), interval=interval, blit=False)
-# ani.save("2d-cxx.mp4", fps=30, extra_args=['-vcodec', 'libx264'])
+ani.save("testing-2d-cxx.mp4", fps=15, extra_args=['-vcodec', 'libx264'])
 
-plt.show()
+# plt.show()

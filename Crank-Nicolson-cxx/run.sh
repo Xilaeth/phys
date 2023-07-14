@@ -1,5 +1,5 @@
 #!/bin/bash
 
-g++ ~/code/phys/Crank-Nicolson-cxx/nicolson.cxx -o nicolson-cxx -I/usr/include/eigen3
+g++ ~/code/phys/Crank-Nicolson-cxx/nicolson.cxx -o nicolson-cxx -I/usr/include/eigen3 -O3
 ~/code/phys/nicolson-cxx
-python3 ~/code/phys/Crank-Nicolson-cxx/plot.py
+#python3 ~/code/phys/Crank-Nicolson-cxx/plot.py

@@ -13,7 +13,7 @@
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 5000;
+const int time_steps = 1600;
 const int x_steps = 1000;
 const CLD x_len = 1.0;
 const CLD t_len = 0.004;
@@ -35,7 +35,7 @@ const CLD wall_start = 0.7;
 
 CLD potential(CLD x) {
     if (real(x) >= real(wall_start) && real(x) <= real(wall_start + wall_width)) {
-        return -pot_fac*(CLD)70000;
+        return pot_fac*(CLD)70000;
     } else {
         return (CLD)0.0;
     }
@@ -43,6 +43,7 @@ CLD potential(CLD x) {
 
 EVEC gauss_seidel_tri(EVEC v, CLD l, int limit) {
     EVEC vec;
+    EVEC pot;
     EVEC a;
     EVEC b;
     EVEC new_vec;
@@ -50,17 +51,25 @@ EVEC gauss_seidel_tri(EVEC v, CLD l, int limit) {
     new_vec.resize(x_steps);
     a.resize(x_steps);
     b.resize(x_steps);
+    pot.resize(x_steps);
     vec.setZero();
     a.setZero();
     b.setZero();
+    pot.setZero();
+
     for (int rep = 1; rep <= limit; rep++) {
         new_vec.setZero();
         for (int nth = 1; nth < x_steps-1; nth++) {
-            if (rep == 1) {
-                b(nth) = (v(nth-1) + v(nth+1)) * lamb02 + (v(nth) * (((CLD)1 - (CLD)2*l) + (dt/(CLD)2)*potential((CLD)nth*dx)));
-            }
+            pot(nth) = potential((CLD)nth*dx);
+            b(nth) = (v(nth-1) + v(nth+1)) * lamb02 + (v(nth) * (((CLD)1 - (CLD)2*l) + (dt/(CLD)2)*pot(nth)));
+        }
+    }
+
+    for (int rep = 1; rep <= limit; rep++) {
+        new_vec.setZero();
+        for (int nth = 1; nth < x_steps-1; nth++) {
             a(nth) = lamb02 * (new_vec(nth-1) + vec(nth+1));
-            new_vec(nth) = (a(nth) - b(nth)) / ( (CLD)1 + (CLD)2*l - (dt/(CLD)2)*potential((CLD)nth*dx) );
+            new_vec(nth) = (a(nth) - b(nth)) / ( (CLD)1 + (CLD)2*l - (dt/(CLD)2)*pot(nth) );
         }
         if ((new_vec - vec).norm() < 1e-10) {
             cout << rep << " | Error: " << (new_vec - vec).norm() << endl;

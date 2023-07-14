@@ -14,9 +14,9 @@ using namespace std;
 
 const int limit = 1000; 
 const int time_steps = 1000;
-const int x_steps = 200;
+const int x_steps = 400;
 const CLD x_len = 1.0;
-const CLD t_len = 0.0016;
+const CLD t_len = 0.006;
 const CLD kx = 0;
 const CLD ky = 500;
 const CLD dt = t_len / (CLD)time_steps;
@@ -101,7 +101,9 @@ int main() {
     }
 
     ofstream dat;
+    ofstream dat2;
     dat.open("nicolson2d.txt");
+    dat2.open("nicolson2d-slice.txt");
     EMAT v0;
     v0 = vec;
 
@@ -113,8 +115,10 @@ int main() {
                     dat << real(v_temp(i, j)) << "|";
                 }
                 dat << ";";
+                dat2 << real(v_temp(i, x_steps-2)) << "|";
             }
             dat << endl;
+            dat2 << endl;
         }
         cout << "Step: " << tim << " | ";
         gauss_seidel_tri(vec);
@@ -123,6 +127,8 @@ int main() {
 
     dat << ">";
     dat.close();
+    dat2 << ">";
+    dat2.close();
 
     return 0;
 }

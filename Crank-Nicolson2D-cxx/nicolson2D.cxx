@@ -14,7 +14,7 @@ using namespace std;
 
 const int limit = 1000; 
 const int time_steps = 1000;
-const int x_steps = 500;
+const int x_steps = 600;
 const CLD x_len = 1.0;
 const CLD t_len = 0.004;
 const CLD kx = 0;

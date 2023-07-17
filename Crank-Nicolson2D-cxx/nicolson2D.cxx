@@ -24,16 +24,16 @@ const CLD dx = x_len / (CLD)x_steps;
 
 const CLD sigma = 0.0025;
 const CLD mean_x = 0.5;
-const CLD mean_y = 0.3;
+const CLD mean_y = 0.175;
 
 const CLD l = (CLD)1i * dt / ((CLD)4*dx*dx);
 const CLD pot_fac = (CLD)(1i)*(dt/(CLD)2.0);
 
-const double wall_y = 0.7;
-const double wall_x1 = 0.45;
-const double wall_x2 = 0.475;
-const double wall_x3 = 0.525;
-const double wall_x4 = 0.55;
+const double wall_y = 0.35;
+const double wall_x1 = 0.462;
+const double wall_x2 = 0.478;
+const double wall_x3 = 0.522;
+const double wall_x4 = 0.538;
 const double wall_width = 0.03;
 
 CLD potential(CLD x, CLD y) {

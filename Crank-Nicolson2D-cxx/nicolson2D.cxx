@@ -13,7 +13,7 @@
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 2000;
+const int time_steps = 2400;
 const int x_steps = 1600;
 const CLD x_len = 1.0;
 const CLD t_len = 0.0018;

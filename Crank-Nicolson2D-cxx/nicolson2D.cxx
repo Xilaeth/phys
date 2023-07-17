@@ -24,16 +24,16 @@ const CLD dx = x_len / (CLD)x_steps;
 
 const CLD sigma = 0.0025;
 const CLD mean_x = 0.5;
-const CLD mean_y = 0.2;
+const CLD mean_y = 0.3;
 
 const CLD l = (CLD)1i * dt / ((CLD)4*dx*dx);
 const CLD pot_fac = (CLD)(1i)*(dt/(CLD)2.0);
 
 const double wall_y = 0.7;
-const double wall_x1 = 0.40;
-const double wall_x2 = 0.50;
-const double wall_x3 = 0.60;
-const double wall_x4 = 0.70;
+const double wall_x1 = 0.45;
+const double wall_x2 = 0.475;
+const double wall_x3 = 0.525;
+const double wall_x4 = 0.55;
 const double wall_width = 0.03;
 
 CLD potential(CLD x, CLD y) {
@@ -45,13 +45,6 @@ CLD potential(CLD x, CLD y) {
     } 
     return pot_fac*(CLD)0.0;
 }
-
-//CLD potential(CLD x, CLD y) {
-    //if (not(x == 0.5) && not(y == 0.5)) {
-        //return pot_fac * (CLD)( (CLD)1 / sqrt((pow((CLD)0.5 - x, 2) + pow((CLD)0.5 - y, 2))));
-    //}
-    //return pot_fac * (CLD)100000.0;
-//}
 
 void gauss_seidel_tri(EMAT &vec) {
     CLD a;
@@ -103,9 +96,11 @@ int main() {
 
     for (int i = 1; i < x_steps-1; i++) {
         for (int j = 1; j < x_steps-1; j++) {
-            vec(i, j) = (exp((-(pow(((CLD)i*dx - mean_x), 2) + pow((CLD)j*dx - mean_y, 2))/sigma) + ((CLD)1i * (kx * (CLD)i*dx + ky * (CLD)j*dx))));
+            vec(i, j) = exp((-(pow(((CLD)i*dx - mean_x), 2) + pow((CLD)j*dx - mean_y, 2))/sigma) + ((CLD)1i * (kx * (CLD)i*dx + ky * (CLD)j*dx)));
         }
     }
+
+    //cout << vec << endl;
 
     ofstream dat;
     ofstream dat2;

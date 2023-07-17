@@ -50,15 +50,15 @@ print(sepsep[0])
 print(size)
 print(tim)
 
-def animation(data, other, plot):
-    print(data)
-    ax.clear()
-    plot = ax.plot_surface(X, Y, sepsep[data], cmap=plt.cm.bwr, rstride=1, cstride=1, linewidth=0.01, color="k")
-    ax.grid(False)
-    ax.set_axis_off()
-    return plot,
+# def animation(data, other, plot):
+    # print(data)
+    # ax.clear()
+    # plot = ax.plot_surface(X, Y, sepsep[data], cmap=plt.cm.bwr, rstride=1, cstride=1, linewidth=0.01, color="k")
+    # ax.grid(False)
+    # ax.set_axis_off()
+    # return plot,
 
-ani = anim.FuncAnimation(fig, animation, frames=tim, fargs=(sepsep, plot), interval=interval, blit=False)
-ani.save("testing-2d-cxx.mp4", fps=15, extra_args=['-vcodec', 'libx264'])
+# ani = anim.FuncAnimation(fig, animation, frames=tim, fargs=(sepsep, plot), interval=interval, blit=False)
+# ani.save("testing-2d-cxx.mp4", fps=15, extra_args=['-vcodec', 'libx264'])
 
-# plt.show()
+plt.show()

@@ -35,6 +35,8 @@ height = max(sepsep.reshape(size*tim))
 
 t = np.linspace(0.0, 1.0, size)
 
+# plt.plot(sepsep[0])
+
 fig, ax = plt.subplots()
 line, = ax.plot([], [], "k")
 xdata, ydata = [], []
@@ -47,6 +49,6 @@ def animation(data):
     return line,
 
 ani = anim.FuncAnimation(fig, animation, frames=tim, interval=interval, blit=True)
-ani.save("double-slit-hard-potential-slice.mp4", fps=15, extra_args=['-vcodec', 'libx264'])
+ani.save("test.mp4", fps=15, extra_args=['-vcodec', 'libx264'])
 
 # plt.show()

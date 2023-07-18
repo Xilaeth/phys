@@ -15,9 +15,9 @@ using namespace std;
 
 const int limit = 1000; 
 const int time_steps = 1000;
-const int x_steps = 600;
+const int x_steps = 400;
 const CLD x_len = 1.0;
-const CLD t_len = 0.002;
+const CLD t_len = 0.003;
 const CLD kx = 0;
 const CLD ky = 500;
 const CLD dt = t_len / (CLD)time_steps;
@@ -98,7 +98,6 @@ void gauss_seidel_tri(EMAT &vec) {
             for (int iy = 1; iy < x_steps-1; iy++) {
                 if (real((CLD)iy*dx) > wall_y && real((CLD)iy*dx) < (wall_y + wall_width)) {
                     if (real((CLD)ix*dx) < wall_x1 || real((CLD)ix*dx) > wall_x4 || (real((CLD)ix*dx) > wall_x2 && real((CLD)ix*dx) < wall_x3)) {
-                        new_vec(ix, iy) = 0;
                         continue;
                     }
                 } 
@@ -138,8 +137,8 @@ int main() {
 
     ofstream dat;
     ofstream dat2;
-    dat.open("nicolson2d-2.txt");
-    dat2.open("nicolson2d-slice-2.txt");
+    dat.open("nicolson2d.txt");
+    dat2.open("nicolson2d-slice.txt");
     EMAT v0;
     v0 = vec;
 

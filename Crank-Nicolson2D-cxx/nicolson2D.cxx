@@ -5,6 +5,7 @@
 #include <cmath>
 #include <fstream>
 #include <eigen3/Eigen/Dense>
+#include <ctime>
 
 #define EMAT Eigen::Matrix<complex<double>, Eigen::Dynamic, Eigen::Dynamic>
 #define EVEC Eigen::Vector<complex<double>, Eigen::Dynamic>
@@ -13,10 +14,10 @@
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 2400;
-const int x_steps = 1600;
+const int time_steps = 1000;
+const int x_steps = 600;
 const CLD x_len = 1.0;
-const CLD t_len = 0.0018;
+const CLD t_len = 0.002;
 const CLD kx = 0;
 const CLD ky = 500;
 const CLD dt = t_len / (CLD)time_steps;
@@ -24,7 +25,7 @@ const CLD dx = x_len / (CLD)x_steps;
 
 const CLD sigma = 0.0025;
 const CLD mean_x = 0.5;
-const CLD mean_y = 0.175;
+const CLD mean_y = 0.1;
 
 const CLD l = (CLD)1i * dt / ((CLD)4*dx*dx);
 const CLD pot_fac = (CLD)(1i)*(dt/(CLD)2.0);
@@ -39,7 +40,7 @@ const double wall_width = 0.03;
 CLD potential(CLD x, CLD y) {
     if (real(y) > wall_y && real(y) < (wall_y + wall_width)) {
         if (real(x) < wall_x1 || real(x) > wall_x4 || (real(x) > wall_x2 && real(x) < wall_x3)) {
-            return pot_fac*(CLD)200000.0; 
+            return pot_fac*(CLD)20000.0;
         }
         return pot_fac*(CLD)0.0;
     } 
@@ -58,19 +59,51 @@ void gauss_seidel_tri(EMAT &vec) {
     pot.setZero();
     b.setZero();
 
+    //EMAT rands;
+    //int rand_numbs = 50;
+    //rands.resize(rand_numbs, 2);
+    //rands.setZero();
+
+    //for (int i = 0; i < rand_numbs; i++) {
+        //rands(i, 0) = (rand() % x_steps); 
+        //rands(i, 1) = (rand() % x_steps); 
+    //}
+
+    //cout << rands << endl;
+
+    int s = 0;
     for (int ix = 1; ix < x_steps-1; ix++) {
         for (int iy = 1; iy < x_steps-1; iy++) {
-            pot(ix, iy) = potential((CLD)ix*dx, (CLD)iy*dx);
+            //for (int in = 0; in < rand_numbs; in++) {
+                //if ((CLD)ix == rands(in, 0) && (CLD)iy == rands(in, 1)) {
+                    //s = 1;
+                //}
+            //}
+            //if (s == 1) {
+                //pot(ix, iy) = ((double) rand() / (RAND_MAX))*(kx*kx + ky*ky)/(CLD)2.0;
+            //} else {
+                //pot(ix, iy) = 0;
+            //}
+            pot(ix, iy) = (CLD)0;//potential((CLD)ix*dx, (CLD)iy*dx);
             b(ix, iy) = (vec(ix-1, iy) + vec(ix+1, iy) + vec(ix, iy-1) + vec(ix, iy+1)) * l + vec(ix, iy) * ((CLD)1 - (CLD)4.0*l + pot(ix, iy));
+            s = 0;
        }
     }
+
+    //cout << pot << endl;
 
     for (int rep = 1; rep <= limit; rep++) {
         new_vec.setZero();
         for (int ix = 1; ix < x_steps-1; ix++) {
             for (int iy = 1; iy < x_steps-1; iy++) {
+                if (real((CLD)iy*dx) > wall_y && real((CLD)iy*dx) < (wall_y + wall_width)) {
+                    if (real((CLD)ix*dx) < wall_x1 || real((CLD)ix*dx) > wall_x4 || (real((CLD)ix*dx) > wall_x2 && real((CLD)ix*dx) < wall_x3)) {
+                        new_vec(ix, iy) = 0;
+                        continue;
+                    }
+                } 
                 a = -l * (new_vec(ix-1, iy) + vec(ix+1, iy) + new_vec(ix, iy-1) + vec(ix, iy+1));
-               new_vec(ix, iy) = (b(ix, iy) - a) / ( (CLD)1 + (CLD)4*l - pot(ix, iy));
+                new_vec(ix, iy) = (b(ix, iy) - a) / ( (CLD)1 + (CLD)4*l - pot(ix, iy));
             }
         }
 
@@ -88,6 +121,7 @@ void gauss_seidel_tri(EMAT &vec) {
 }
 
 int main() {
+    srand(time(0));
 
     EMAT vec;
 
@@ -104,8 +138,8 @@ int main() {
 
     ofstream dat;
     ofstream dat2;
-    dat.open("nicolson2d.txt");
-    dat2.open("nicolson2d-slice.txt");
+    dat.open("nicolson2d-2.txt");
+    dat2.open("nicolson2d-slice-2.txt");
     EMAT v0;
     v0 = vec;
 

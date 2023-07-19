@@ -77,6 +77,9 @@ void gauss_seidel_tri(EVEC &vec) {
     }
 }
 
+//void integrate(double from, double to, EVEC func, :w
+
+
 int main() {
     EVEC vec;
     vec.setZero();
@@ -95,7 +98,7 @@ int main() {
     }
 
     ofstream dat;
-    dat.open("nicolson.txt");
+    dat.open("nicolson-k-space.txt");
     int count = 0;
 
     for (int tim = 0; tim < time_steps; tim++) {

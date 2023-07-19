@@ -14,7 +14,7 @@ using namespace std;
 
 int limit = 1000; 
 int time_steps = 50;
-int x_steps = 100;
+int x_steps = 400;
 const CLD x_len = 1.0;
 const CLD t_len = 0.0016;
 const CLD kx = 0;
@@ -22,9 +22,9 @@ const CLD ky = 500;
 CLD dt = t_len / (CLD)time_steps;
 const CLD dx = x_len / (CLD)x_steps;
 
-int iter_amount = 0;
+long iter_amount = 0;
 //const int x_steps_steps = 50;
-const int fraction = 10;
+const int fraction = 20;
 const int time_steps_steps = 50;
 const int time_steps_max = 2000;
 
@@ -74,8 +74,6 @@ void gauss_seidel_tri(EMAT &vec) {
         }
 
         if ((new_vec - vec).norm() < 1e-10) {
-            //cout << dt << endl;
-            //cout << rep << " | Error: " << (new_vec - vec).norm() << endl;
             iter_amount += rep;
             break;
         }
@@ -122,9 +120,9 @@ int main() {
         for (int tim = 0; tim < (time_steps / fraction); tim++) {
             gauss_seidel_tri(vec);
         }
-        //cout << iter_amount << endl;
-        cout << "T-Steps: " << time_steps << " | Iter-Amount: " <<  iter_amount / (time_steps / fraction) << endl;
-        dat << iter_amount / (time_steps / fraction);
+        long out = iter_amount * fraction * (x_steps * x_steps);
+        cout << "T-Steps: " << time_steps << " | Iter-Amount: " <<  out << endl;
+        dat << out;
         dat << "|";
         vec = vec_start;
         iter_amount = 0;

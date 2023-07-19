@@ -14,7 +14,7 @@ using namespace std;
 
 int limit = 1000; 
 int time_steps = 50;
-int x_steps = 400;
+int x_steps = 500;
 const CLD x_len = 1.0;
 const CLD t_len = 0.0016;
 const CLD kx = 0;
@@ -24,7 +24,7 @@ const CLD dx = x_len / (CLD)x_steps;
 
 long iter_amount = 0;
 //const int x_steps_steps = 50;
-const int fraction = 20;
+const int fraction = 50;
 const int time_steps_steps = 50;
 const int time_steps_max = 2000;
 

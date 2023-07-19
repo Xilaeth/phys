@@ -27,7 +27,7 @@ t = np.linspace(50.0, 2000.0, int(2000.0/50.0))
 
 plt.xlim([0, 2000])
 plt.ylim([0, max(sep)])
-plt.title("X-Steps: 100")
+plt.title("X-Steps: 500")
 plt.xlabel("t-steps")
 plt.ylabel("no. of computations")
 plt.plot(t, x)

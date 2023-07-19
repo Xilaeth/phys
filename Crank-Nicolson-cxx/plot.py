@@ -5,7 +5,6 @@ import matplotlib.patches as mpatches
 
 file = open("nicolson.txt", "r")
 dat = file.read()
-# print(dat)
 file.close()
 
 text_buf = ""
@@ -35,9 +34,6 @@ line, = ax.plot([], [], "k")
 xdata, ydata = [], []
 ax.set_xlim([0, 1])
 ax.set_ylim([0, 1.2])
-
-print(sepsep[0])
-print(size)
 
 def animation(data):
     line.set_xdata(t)

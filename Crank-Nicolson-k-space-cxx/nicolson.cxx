@@ -13,9 +13,9 @@ using namespace std;
 
 const int limit = 1000; 
 const int time_steps = 1000;
-const int x_steps = 300;
+const int x_steps = 1000;
 const CLD x_len = 1.0;
-const CLD t_len = 0.004;
+const CLD t_len = 0.008;
 const CLD m = 1;
 const CLD hbar = 1;
 const CLD k = 500;
@@ -77,7 +77,14 @@ void gauss_seidel_tri(EVEC &vec) {
     }
 }
 
-//void integrate(double from, double to, EVEC func, :w
+void fourier_trafo(EVEC &k_vec, EVEC &vec, CLD kmax) {
+    CLD pre_fac = dx/(CLD)(sqrt(2.0*M_PI));
+    for (int ik = 1; ik < x_steps; ik++) {
+        for (int ix = 1; ix < x_steps-1; ix++) {
+            k_vec(ik) += pre_fac * vec(ix) * exp( -(CLD)1i * ((CLD)ik*dx*kmax) * (dx*(CLD)ix));
+        }
+    }
+}
 
 
 int main() {
@@ -88,7 +95,13 @@ int main() {
         vec(i) = (exp((-pow(((CLD)i*dx - mean_x), 2)/sigma) + ((CLD)1i * k * (CLD)i*dx)));
     }
 
-    cout << vec << endl;
+    //EVEC k_vec;
+    //k_vec.resize(x_steps);
+    //k_vec.setZero();
+    //fourier_trafo(k_vec, vec, k);
+    //cout << k_vec << endl;
+    //exit(0); 
+    //vec = k_vec;
 
     pot.resize(x_steps);
     pot.setZero();
@@ -101,15 +114,21 @@ int main() {
     dat.open("nicolson-k-space.txt");
     int count = 0;
 
+    EVEC k_vec;
+    k_vec.resize(x_steps);
+    k_vec.setZero();
+
     for (int tim = 0; tim < time_steps; tim++) {
         cout << "Step: " << tim << " | ";
-        if (count % 10 == 0) {
+        if (count % 5 == 0) {
+            fourier_trafo(k_vec, vec, k);
             for (int i = 0; i < x_steps; i++) {
                 dat << real(vec.array().abs().square())(i) << "|";
             }
             dat << endl;
         }
         gauss_seidel_tri(vec);
+        cout << real(vec.array().abs().square().sum()) << endl;
         count++;
     }
 

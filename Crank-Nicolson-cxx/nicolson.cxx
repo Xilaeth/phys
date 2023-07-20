@@ -12,10 +12,10 @@
 using namespace std;
 
 const int limit = 1000; 
-const int time_steps = 1000;
-const int x_steps = 300;
+const int time_steps = 2000;
+const int x_steps = 500;
 const CLD x_len = 1.0;
-const CLD t_len = 0.004;
+const CLD t_len = 0.04;
 const CLD m = 1;
 const CLD hbar = 1;
 const CLD k = 500;
@@ -35,11 +35,12 @@ const CLD wall_start = 0.7;
 EVEC pot;
 
 CLD potential(CLD x) {
-    if (real(x) >= real(wall_start) && real(x) <= real(wall_start + wall_width)) {
-        return pot_fac*(CLD)70000;
-    } else {
-        return (CLD)0.0;
-    }
+    //if (real(x) >= real(wall_start) && real(x) <= real(wall_start + wall_width)) {
+        //return pot_fac*(CLD)70000;
+    //} else {
+        //return (CLD)0.0;
+    //}
+    return (CLD)0.0;
 }
 
 void gauss_seidel_tri(EVEC &vec) {

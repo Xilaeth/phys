@@ -2,34 +2,38 @@ import numpy as np
 from vispy import app, scene, io, color
 import os
 
+data_dir = "data/"
 
+data_files = os.listdir(data_dir)
 
-file = open("nicolson2d.txt", "r")
-dat = file.read()
-# print(dat)
-file.close()
+data_files.sort(key=int)
+print(data_files)
 
 count = 0
 text_buf = ""
 sep = []
 sep2 = []
 sepsep = []
-for c in dat:
-    if c == '>':
-        break
-    elif c == '\n':
-        sepsep.append(np.array(sep2))
-        sep2 = []
-        print(count)
-        count += 1
-    elif c == ";":
-        sep2.append(np.array(sep))
-        sep = []
-    elif c == '|':
-        sep.append(float(text_buf))
-        text_buf = ""
-    else:
-        text_buf += c
+
+for files in data_files:
+    file = open(data_dir + files)
+    dat = file.read()
+    file.close()
+    for c in dat:
+        if c == '>':
+            sepsep.append(np.array(sep2))
+            sep2 = []
+            print(count)
+            count += 1
+            break
+        elif c == ';':
+            sep2.append(np.array(sep))
+            sep = []
+        elif c == '|':
+            sep.append(float(text_buf))
+            text_buf = ""
+        else:
+            text_buf += c
 
 sepsep = np.array(sepsep)
 size = len(sepsep[0])
@@ -53,17 +57,15 @@ view.add(surface)
 
 view.camera = 'turntable'
 
-count = 0
-
 def update(event):
     global count, colormap
-    if count == size:
+    if count == 0:
         exit()
     new_z = sepsep[count]
     surface.set_data(z=new_z)
     frame = canvas.render()
     io.write_png(f'vispy-frames/frame-{count:03d}.png', frame)
-    count += 1
+    count -= 1
     canvas.update()
 
 timer = app.Timer(connect=update, start=1/15)

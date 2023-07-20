@@ -97,36 +97,27 @@ int main() {
         }
     }
 
-
-    ofstream dat;
-    ofstream dat2;
-    dat.open("nicolson2d.txt");
-    dat2.open("nicolson2d-slice.txt");
     EMAT v0;
     v0 = vec;
 
     for (int tim = 0; tim < time_steps; tim++) {
         if (tim % 10 == 0) {
-            EMAT v_temp = vec.array().abs().square();
+            ofstream dat;
+            dat.open("data/" + to_string(tim/10));
             for (int i = 0; i < x_steps; i++) {
                 for (int j = 0; j < x_steps; j++) {
-                    dat << real(v_temp(i, j)) << "|";
+                    dat << real((vec.array().abs().square())(i, j)) << "|";
                 }
                 dat << ";";
-                dat2 << real(v_temp(i, x_steps-2)) << "|";
             }
-            dat << endl;
-            dat2 << endl;
+            dat << ">";
+            dat.close();
         }
         cout << "Step: " << tim << " | ";
         gauss_seidel_tri(vec);
         cout << tim << " | " << (vec.array().abs().square()).sum() << endl;
     }
 
-    dat << ">";
-    dat.close();
-    dat2 << ">";
-    dat2.close();
 
     return 0;
 }
